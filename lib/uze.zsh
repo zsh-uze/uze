@@ -10,7 +10,7 @@ in the current manual, we expect `uze.zsh` to be loaded.
 
 =head2 default behaviours
 
-those defaults are discuted in the programming guide, they became mine after 
+those defaults are discuted in the programming guide, they became mine after
 years of zsh programming and hours of zsh debuging.
 
     setopt warncreateglobal nounset       # make zsh stricter
@@ -18,11 +18,15 @@ years of zsh programming and hours of zsh debuging.
 
 see also the "yada yada operator" from the helpers section.
 
-=head2 namespaces and modules
+=head2 functions
 
-for more details about the behavior of `uze`, see the project page.
+=head3 uze
 
-=head2 other helpers
+C<uze> loads a module and execute the C<uze/import/the/module> function. then
+exports the functions declared in C<EXPORT_TAGS> and C<EXPORT> variables.
+
+see the project page documentation for more details about writting modules and
+dealing with namespaces. 
 
 =head3 shush, shush1, shush2
 
@@ -36,7 +40,7 @@ so
 
     shush grep foo bar && echo ok
 
-is like 
+is like
 
     shush grep &> /dev/null && echo ok
 
@@ -50,7 +54,7 @@ die warns and exit.
 
 =head3 fill
 
-read multiple lines into a list of variables 
+read multiple lines into a list of variables
 
     date +"%Y\n%m" | fill year month
     echo $year
@@ -65,7 +69,7 @@ read multiple lines in an array
 =head3 my% and my@ aliases
 
 those are shorter, memorizable aliases for C<typeset -A>
-(local associative array) and C<typeset -a> (local array). 
+(local associative array) and C<typeset -a> (local array).
 
     Perl                     | zsh                   | uze
     ------------------------------------------------------------
@@ -78,15 +82,49 @@ those are shorter, memorizable aliases for C<typeset -A>
 `my@` is only usefull inside a function to prevent the declaration
 of a global array.
 
-=head3 defined
-
 =head3 apply
+
+apply a function (with arguments) for each lines of C<stdin> as C<$it>.
+
+    greetings () { print "$* $it" }
+    seq 3 |apply greetings hello
+
+will output
+
+    hello 1
+    hello 2
+    hello 3
 
 =head3 epply
 
+eval a block for each lines of C<stdin> as C<$it>.
+
+    seq 3 |epply 'print hello $it'
+
+will output
+
+    hello 1
+    hello 2
+    hello 3
+
+
 =head3 pipify
 
+for an existing command C<foo>, pipify create a C<foo-> command that
+takes an extra argument from C<stdin> repeatidly. 
+
+    pipify foo 
+
+is like
+
+    foo- () {
+        local it
+        while {read it} {foo "$@" $it}
+    }
+
 =head3 the yada yada operator (...)
+
+warns an "unimplemented" message and returns false.
 
 =cut
 
@@ -129,7 +167,7 @@ uzu () {
 
     . $uzu_can[1]
     typeset -a UZU_EXPORT
-    local uzu_exporter=uzu/$uzu_ns  
+    local uzu_exporter=uzu/$uzu_ns
     if {shush which $uzu_exporter} {
         if {$uzu_exporter $@} { uzu/alias $UZU_EXPORT }
     } else { uzu/alias $@ }
@@ -150,18 +188,33 @@ uze/pkg/do () {
 uze/doc    () { uze/pkg/do $1 eval "perldoc ${@[2,-1]} \$__FILE__" }
 uze/doc/md () { uze/doc $1 -o Markdown }
 
-# call a function if declared
-uze/iffn () { (( ${+functions[$1]} )) && "$@" }
-
 uze () {
-    local __PACKAGE__=$1 UZE_
-    my@ UZE
+    my% EXPORT_TAGS
+    my@ EXPORT
+    local __PACKAGE__=$1 UZE_ __SUB__ ok=true msg
     shift
     .  $__PACKAGE__.zsh
-    for UZE_
-        uze/iffn uze/import/$__PACKAGE__/$UZE_ ||
-            UZE+=$UZE_
-    for UZE_ ($UZE) { alias $UZE_=$__PACKAGE__/$UZE_ }
+    () { shush whence -w $1 && $1 } uze/import/$__PACKAGE__
+
+    for UZE_ {
+        if [[ $UZE_ == :* ]] {
+            if (( $+EXPORT_TAGS[$UZE_] )) { EXPORT+=( $=EXPORT_TAGS[$UZE_] ) }\
+            else {
+                warn "$UZE_ isn't an EXPORT_TAG"
+                ok=false
+            }
+        } else { EXPORT+=$UZE_ }
+    }
+
+    for UZE_ ( ${(u)EXPORT} ) {
+        __SUB__=$__PACKAGE__/$UZE_
+        msg="$UZE_ was $(shush2 whence -m $UZE_), redefined as $__SUB__" &&
+            { warn $msg; ok=false }
+        shush which $__SUB__ ||
+            { warn "exported $__SUB__ is not defined"; ok=false }
+        alias $UZE_=$__SUB__
+    }
+    $ok
 }
 
 alias uze/help='uze/doc ${0%/*}'
