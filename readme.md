@@ -1,21 +1,17 @@
 the current documentation was extracted from the module. 
 thinks we still have to do
 
-* better error handling for `uze/pkg/do`
-* finish and review the documentation
-* test uze EXPORTER system (the tag functions are boring)
-
 # uze
 
-general informations about `uze` are available on
-[the project page](https://zsh-uze.github.com/). this document is the `uze.zsh`
+general informations about \`uze\` are available on
+[the project page](https://zsh-uze.github.com/). this document is the \`uze.zsh\`
 manual.
 
-in the current manual, we expect `uze.zsh` to be loaded.
+in the current manual, we expect \`uze.zsh\` to be loaded.
 
 ## default behaviours
 
-those defaults are discuted in the programming guide, they became mine after 
+those defaults are discuted in the programming guide, they became mine after
 years of zsh programming and hours of zsh debuging.
 
     setopt warncreateglobal nounset       # make zsh stricter
@@ -23,11 +19,15 @@ years of zsh programming and hours of zsh debuging.
 
 see also the "yada yada operator" from the helpers section.
 
-## namespaces and modules
+## functions
 
-for more details about the behavior of `uze`, see the project page.
+### uze
 
-## other helpers
+`uze` loads a module and execute the `uze/import/the/module` function. then
+exports the functions declared in `EXPORT_TAGS` and `EXPORT` variables.
+
+see the project page documentation for more details about writting modules and
+dealing with namespaces. 
 
 ### shush, shush1, shush2
 
@@ -41,7 +41,7 @@ so
 
     shush grep foo bar && echo ok
 
-is like 
+is like
 
     shush grep &> /dev/null && echo ok
 
@@ -55,7 +55,7 @@ die warns and exit.
 
 ### fill
 
-read multiple lines into a list of variables 
+read multiple lines into a list of variables
 
     date +"%Y\n%m" | fill year month
     echo $year
@@ -70,7 +70,7 @@ read multiple lines in an array
 ### my% and my@ aliases
 
 those are shorter, memorizable aliases for `typeset -A`
-(local associative array) and `typeset -a` (local array). 
+(local associative array) and `typeset -a` (local array).
 
     Perl                     | zsh                   | uze
     ------------------------------------------------------------
@@ -80,16 +80,48 @@ those are shorter, memorizable aliases for `typeset -A`
     (ref $user) // 'no more' | ${(t)user-no more}    |
     exists $user{cpan}       | (( $+user[cpan] ))    |
 
-`my@` is only usefull inside a function to prevent the declaration
+\`my@\` is only usefull inside a function to prevent the declaration
 of a global array.
-
-### defined
 
 ### apply
 
+apply a function (with arguments) for each lines of `stdin` as `$it`.
+
+    greetings () { print "$* $it" }
+    seq 3 |apply greetings hello
+
+will output
+
+    hello 1
+    hello 2
+    hello 3
+
 ### epply
+
+eval a block for each lines of `stdin` as `$it`.
+
+    seq 3 |epply 'print hello $it'
+
+will output
+
+    hello 1
+    hello 2
+    hello 3
 
 ### pipify
 
+for an existing command `foo`, pipify create a `foo-` command that
+takes an extra argument from `stdin` repeatidly. 
+
+    pipify foo 
+
+is like
+
+    foo- () {
+        local it
+        while {read it} {foo "$@" $it}
+    }
+
 ### the yada yada operator (...)
 
+warns an "unimplemented" message and returns false.
