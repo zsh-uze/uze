@@ -148,31 +148,6 @@ pipify ()  { eval "$1- () {local it; while {read it} { $1 \"\$@\" \$it }}" }
 
 alias ...='{warn "Unimplemented in $0 line $LINENO"; return 255}'
 
-uzu/alias () {
-    local uzu_al
-    for uzu_al { alias $uzu_al=$uzu_ns/$uzu_al }
-}
-
-uzu () {
-
-    local uzu_ns=$1 uzu_does
-    shift
-    typeset -a uzu_can
-    uzu_can=( ${^path}/{,uze/}$uzu_ns(N) )
-
-    ((#uzu_can)) || {
-        warn "can't find $uzu_ns in \$path"
-        return
-    }
-
-    . $uzu_can[1]
-    typeset -a UZU_EXPORT
-    local uzu_exporter=uzu/$uzu_ns
-    if {shush which $uzu_exporter} {
-        if {$uzu_exporter $@} { uzu/alias $UZU_EXPORT }
-    } else { uzu/alias $@ }
-}
-
 uze/pkg/path () {
     path=( ${(u)path} )
     __FILE__=($^path/$1.zsh([1]ND))
