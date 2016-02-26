@@ -1,5 +1,28 @@
 : <<'=cut'
 
+=head1 uze for impatients
+
+uze make your zsh more perlish
+
+download [uze](https://raw.githubusercontent.com/zsh-uze/uze/master/lib/uze.zsh)
+somewhere in your local drive and add this in your `.zshenv`
+
+  . /path/to/uze.zsh
+  # or just
+  . uze.zsh
+  # if uze.zsh is in your path
+
+now, the behaviors described below applies. so you can write
+
+    uze my-lib :all
+
+    if {which perl} {
+        warn "perl is ready to run"
+    } else {
+        # yes! you can use yada now
+        ...
+    }
+
 =head1 uze
 
 general informations about `uze` are available on
