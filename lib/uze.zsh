@@ -126,6 +126,11 @@ is like
 
 warns an "unimplemented" message and returns false.
 
+=head3 herror macro
+
+herror is a violent contraction of 'here error', it warns an error message
+prefixed by the place it was rised.
+
 =cut
 
 setopt warncreateglobal nounset extendedglob braceccl pathdirs rcquotes
@@ -133,8 +138,8 @@ setopt warncreateglobal nounset extendedglob braceccl pathdirs rcquotes
 shush1   () { "$@" 1> /dev/null }
 shush2   () { "$@" 2> /dev/null }
 shush    () { "$@" &> /dev/null }
-warn     () { local r=$?; print -u2 "$*"; return $r }
-die      () { local r=$?; print -u2 "$*"; exit $r   }
+warn     () { local r=$?; print -u2 -- "$*"; return $r }
+die      () { local r=$?; print -u2 -- "$*"; exit $r   }
 slurp    () { IFS=$'\n' read -d '' -A $1 }
 fill     () { local __garbage; IFS=$'\n' read -d '' "$@" __garbage }
 
@@ -147,6 +152,7 @@ defined () { eval '(( ${+'${1?symbol to test }'} ))' }
 pipify ()  { eval "$1- () {local it; while {read it} { $1 \"\$@\" \$it }}" }
 
 alias ...='{warn "Unimplemented in $0 line $LINENO"; return 255}'
+alias herror='print -u2 -- "$0:$LINENO error"'
 
 uze/pkg/path () {
     path=( ${(u)path} )
@@ -189,7 +195,9 @@ uze () {
             { warn "exported $__SUB__ is not defined"; ok=false }
         alias $UZE_=$__SUB__
     }
+
     $ok
+
 }
 
 alias uze/help='uze/doc ${0%/*}'
