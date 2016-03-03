@@ -1,5 +1,25 @@
-the current documentation was extracted from the module. 
-thinks we still have to do
+# uze for impatients
+
+uze make your zsh more perlish
+
+download \[uze\](https://raw.githubusercontent.com/zsh-uze/uze/master/lib/uze.zsh)
+somewhere in your local drive and add this in your \`.zshenv\`
+
+    . /path/to/uze.zsh
+    # or just
+    . uze.zsh
+    # if uze.zsh is in your path
+
+now, the behaviors described below applies. so you can write
+
+    uze my-lib :all
+
+    if {which perl} {
+        warn "perl is ready to run"
+    } else {
+        # yes! you can use yada now
+        ...
+    }
 
 # uze
 
@@ -125,3 +145,16 @@ is like
 ### the yada yada operator (...)
 
 warns an "unimplemented" message and returns false.
+
+### herror macro
+
+herror is a violent contraction of 'here error', it warns an error message
+prefixed by the place it was rised.
+
+# POD ERRORS
+
+Hey! **The above document had some coding errors, which are explained below:**
+
+- Around line 22:
+
+    Non-ASCII character seen before =encoding in '# yes!'. Assuming UTF-8
