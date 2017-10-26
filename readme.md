@@ -2,13 +2,13 @@
 
 uze make your zsh more perlish
 
-download \[uze\](https://raw.githubusercontent.com/zsh-uze/uze/master/lib/uze.zsh)
-somewhere in your local drive and add this in your \`.zshenv\`
+download [uze](https://raw.githubusercontent.com/zsh-uze/uze/master/lib/uze.zsh)
+somewhere in your local drive and add this in your `.zshenv`
 
-    . /path/to/uze.zsh
-    # or just
-    . uze.zsh
-    # if uze.zsh is in your path
+  . /path/to/uze.zsh
+  # or just
+  . uze.zsh
+  # if uze.zsh is in your path
 
 now, the behaviors described below applies. so you can write
 
@@ -17,17 +17,57 @@ now, the behaviors described below applies. so you can write
     if {which perl} {
         warn "perl is ready to run"
     } else {
-        # yes! you can use yada now
+        # yes! you can use yada now
         ...
     }
 
 # uze
 
-general informations about \`uze\` are available on
-[the project page](https://zsh-uze.github.com/). this document is the \`uze.zsh\`
+general informations about `uze` are available on
+[the project page](https://zsh-uze.github.com/). this document is the `uze.zsh`
 manual.
 
-in the current manual, we expect \`uze.zsh\` to be loaded.
+in the current manual, we expect `uze.zsh` to be loaded.
+
+## write and install a module
+
+say `~lib` is a directory declared in your `$path` and the content of
+`~lib/my/helpers.zsh` is (possibly `zcompile`d)
+
+    my/helpers/greetings () {
+        l "hello, ${1:-world}"
+    }
+
+    my/helpers/dont () {
+        l "don't do this, ${1:-world}"
+    }
+
+    my/helpers/cheers () {
+        l "cheers, ${1:-world}"
+    }
+
+you can source it the way you usually do
+
+    .  my/helpers.zsh
+
+    my/helpers/greetings
+
+uze gives you the ability to "export" fonctions another namespace
+(by default: no namespace, think of it as the perl `main`). so you can write
+
+    uze my/helpers greetings
+    greetings
+
+
+
+    uze/export/my/helpers () {
+        EXPORT_TAGS=( :cool 'cheers greetings' )
+        EXPORT=( "$@" )
+    }
+
+### uzeless
+
+TODO: document uze/copy combined with which to create a straight script
 
 ## default behaviours
 
@@ -36,6 +76,7 @@ years of zsh programming and hours of zsh debuging.
 
     setopt warncreateglobal nounset       # make zsh stricter
     setopt extendedglob braceccl rcquotes # make zsh more expressive
+    promptsubst promptbang promptpercent  # prompt goodness available in variable substitions
 
 see also the "yada yada operator" from the helpers section.
 
@@ -47,7 +88,7 @@ see also the "yada yada operator" from the helpers section.
 exports the functions declared in `EXPORT_TAGS` and `EXPORT` variables.
 
 see the project page documentation for more details about writting modules and
-dealing with namespaces. 
+dealing with namespaces.
 
 ### shush, shush1, shush2
 
@@ -63,7 +104,7 @@ so
 
 is like
 
-    shush grep &> /dev/null && echo ok
+    grep foo bar &> /dev/null && echo ok
 
 ### warn
 
@@ -73,11 +114,11 @@ warn prints a message in stderr without changing the last command return (`$?`).
 
 die warns and exit.
 
-### fill
+### readlines
 
 read multiple lines into a list of variables
 
-    date +"%Y\n%m" | fill year month
+    date +"%Y\n%m" | readlines year month
     echo $year
 
 ### slurp
@@ -87,7 +128,7 @@ read multiple lines in an array
     getent passwd | slurp users
     print "entry of root is" $users[1]
 
-### my% and my@ aliases
+### typeset aliases
 
 those are shorter, memorizable aliases for `typeset -A`
 (local associative array) and `typeset -a` (local array).
@@ -96,65 +137,43 @@ those are shorter, memorizable aliases for `typeset -A`
     ------------------------------------------------------------
     my %foo                  | typeset -A  foo       | my% foo
     my @bar                  | typeset -a  bar       | my@ bar
+    my %foo # global         | typeset -gA  foo      | our% foo
+    my @bar # global         | typeset -ga  bar      | our@ bar
     ref $user                | ${(t)user}            |
     (ref $user) // 'no more' | ${(t)user-no more}    |
     exists $user{cpan}       | (( $+user[cpan] ))    |
 
-\`my@\` is only usefull inside a function to prevent the declaration
+`my@` is only usefull inside a function to prevent the declaration
 of a global array.
 
-### apply
+### warn, die, warn_ and die_
 
-apply a function (with arguments) for each lines of `stdin` as `$it`.
+### the yada-yada operator (...)
 
-    greetings () { print "$* $it" }
-    seq 3 |apply greetings hello
+warns an "unimplemented" message and returns false (255 actually).
 
-will output
+    ...
+    Unimplemented in zsh line 6
 
-    hello 1
-    hello 2
-    hello 3
+    f () {
+        defined DEBUG && ...
+        l 'i don''t know what to do in DEBUG mode' }
 
-### epply
+    f
+    l 'see ?'
+    DEBUG=msg f
 
-eval a block for each lines of `stdin` as `$it`.
+    <stdout> i don't know what to do in DEBUG mode
+    <stdout> see ?
+    <stderr> at f line 1, warning: unimplemented
 
-    seq 3 |epply 'print hello $it'
+### defined
 
-will output
+test if a variable is defined
 
-    hello 1
-    hello 2
-    hello 3
+    defined 1
 
-### pipify
+is a readable way to write
 
-for an existing command `foo`, pipify create a `foo-` command that
-takes an extra argument from `stdin` repeatidly. 
+    (( $+1 ))
 
-    pipify foo 
-
-is like
-
-    foo- () {
-        local it
-        while {read it} {foo "$@" $it}
-    }
-
-### the yada yada operator (...)
-
-warns an "unimplemented" message and returns false.
-
-### herror macro
-
-herror is a violent contraction of 'here error', it warns an error message
-prefixed by the place it was rised.
-
-# POD ERRORS
-
-Hey! **The above document had some coding errors, which are explained below:**
-
-- Around line 22:
-
-    Non-ASCII character seen before =encoding in '# yes!'. Assuming UTF-8
