@@ -31,6 +31,8 @@ alias no/strict='setopt  localoptions nounset warncreateglobal'
 
 defined () (( ${(P)+1} ))
 
+uze/alias () { eval "$2 () { $1 "' "$@" }' }
+
 uze () {
 
     my% EXPORT_TAGS # set of tags that can be defined in uze/import/$__PACKAGE__
@@ -52,9 +54,5 @@ uze () {
         }
     }
 
-    @ ( ${(u)exportable} ) {
-        __SUB__=$__PACKAGE__/$it
-        __CALLER__=
-        eval "$( which $__SUB__ | sed "1s#${__SUB__}#${__CALLER__}${it}#" )"
-    }
+    @ ( ${(u)exportable} ) uze/alias $__PACKAGE__/$it $it
 }
