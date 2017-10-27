@@ -27,7 +27,7 @@ slurp     () { IFS=$'\n' read -d '' -A $1 }
 readlines () { local _; IFS=$'\n' read -d '' "$@" _ }
 
 alias uze/strict='setopt localoptions unset nowarncreateglobal'
-alias no/strict='setopt  localoptions nounset warncreateglobal'
+alias uze/no/strict='setopt localoptions nounset warncreateglobal'
 
 defined () (( ${(P)+1} ))
 
