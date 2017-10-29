@@ -32,6 +32,9 @@ defined () (( ${(P)+1} ))
 
 uze/alias () { eval "$2 () { $1 "' "$@" }' }
 
+uze/functions () { say ${(Mk)functions:$~1} }
+uze/nsdump    () { local it; @ (${(Mk)functions:$~1}) which $it }
+
 uze () {
 
     my% EXPORT_TAGS # set of tags that can be defined in uze/import/$__PACKAGE__
