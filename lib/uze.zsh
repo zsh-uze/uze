@@ -6,7 +6,6 @@ alias @='for it'
 alias %='for k v'
 alias %-='while {read k v}'
 alias @-='while {read it}'
-alias l='print -l'
 
 alias my@='typeset -a'
 alias my%='typeset -A'
@@ -18,8 +17,8 @@ die_  () { local r=$?; print -u2 "$*"; exit   $r }
 alias warn='warn_ at $0 line $LINENO, warning:'
 alias ...='{warn unimplemented; return 255}'
 alias die='die_  died at $0 line $LINENO:'
-# f () { l 'ok'; ... ; l 'not ok' }
 
+say () {print -l "$@"}
 shush1    () { "$@" 1> /dev/null }
 shush2    () { "$@" 2> /dev/null }
 shush     () { "$@" &> /dev/null }
