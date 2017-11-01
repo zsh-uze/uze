@@ -28,11 +28,11 @@ readlines () { local _; IFS=$'\n' read -d '' "$@" _ }
 alias uze/strict='setopt localoptions unset nowarncreateglobal'
 alias uze/no/strict='setopt localoptions nounset warncreateglobal'
 
-defined () (( ${(P)+1} ))
+defined     () (( ${(P)+1} ))
+uze/alias   () { eval "$2 () { $1 "' "$@" }' }
+uze/ns/dump () { local it; @ (${(Mk)functions:#$~1}) which $it }
+uze/ns/subcommands () eval $1' () { $0/${(j:/:)@[1,'$2']} ; shift '$2' "$@" }'
 
-uze/alias () { eval "$2 () { $1 "' "$@" }' }
-
-uze/nsdump    () { local it; @ (${(Mk)functions:$~1}) which $it }
 
 uze () {
 
