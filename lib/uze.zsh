@@ -25,8 +25,8 @@ shush     () { "$@" &> /dev/null }
 slurp     () { IFS=$'\n' read -d '' -A $1 }
 readlines () { local _; IFS=$'\n' read -d '' "$@" _ }
 
-alias uze/strict='setopt localoptions unset nowarncreateglobal'
-alias uze/no/strict='setopt localoptions nounset warncreateglobal'
+alias uze/strict='setopt localoptions nounset warncreateglobal'
+alias uze/no/strict='setopt localoptions unset nowarncreateglobal'
 
 defined     () (( ${(P)+1} ))
 uze/alias   () { eval "$2 () { $1 "' "$@" }' }
