@@ -30,6 +30,7 @@ alias uze/no/strict='setopt localoptions unset nowarncreateglobal'
 
 defined     () (( ${(P)+1} ))
 uze/alias   () { eval "$2 () { $1 "' "$@" }' }
+uze/which   () { l $^path/$1.zsh(N) }
 uze/ns/dump () { local it; @ (${(Mk)functions:#$~1}) which $it }
 uze/ns/subcommands () eval $1' () { $0/${(j:/:)@[1,'$2']} ; shift '$2' "$@" }'
 
