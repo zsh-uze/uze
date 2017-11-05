@@ -43,9 +43,17 @@ uze () {
 
     shift
     .  $__PACKAGE__.zsh
+
+    # execute the exporter if it is available
+    # the exporter is in charge to
+    # - define EXPORT_TAGS
+    # - define EXPORT
+    # - define the boolean delegate
+
     () {
-        if    { shush whence -w $1 } { "$@" }\
-        else  { shift; EXPORT=( "$@" ) }
+        local delegate=true
+        shush whence -w $1 && "$@"
+        $delegate && { shift; EXPORT+=( "$@" ) }
     } uze/export/$__PACKAGE__ "$@"
 
     my@ exportable
