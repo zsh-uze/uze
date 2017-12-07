@@ -1,4 +1,5 @@
-setopt warncreateglobal nounset extendedglob braceccl pathdirs rcquotes \
+setopt warncreateglobal nounset pipefail \
+    extendedglob braceccl pathdirs rcquotes \
     promptsubst promptbang promptpercent
 
 it= k= v=
