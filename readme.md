@@ -24,7 +24,7 @@ now, the behaviors described below applies. so you can write
 # uze
 
 general informations about `uze` are available on
-[the project page](https://zsh-uze.github.com/). this document is the `uze.zsh`
+[the project page](https://github.com/zsh-uze). this document is the `uze.zsh`
 manual.
 
 in the current manual, we expect `uze.zsh` to be loaded.
@@ -58,8 +58,6 @@ uze gives you the ability to "export" fonctions another namespace
     uze my/helpers greetings
     greetings
 
-
-
     uze/export/my/helpers () {
         EXPORT_TAGS=( :cool 'cheers greetings' )
         EXPORT=( "$@" )
@@ -67,20 +65,20 @@ uze gives you the ability to "export" fonctions another namespace
 
 ### uzeless
 
-TODO: document uze/copy combined with which to create a straight script
-
 ## default behaviours
 
 those defaults are discuted in the programming guide, they became mine after
 years of zsh programming and hours of zsh debuging.
 
-    setopt warncreateglobal nounset       # make zsh stricter
+    setopt warncreateglobal nounset pipefail  # make zsh stricter
     setopt extendedglob braceccl rcquotes # make zsh more expressive
     promptsubst promptbang promptpercent  # prompt goodness available in variable substitions
 
+those options are described in man `zshopt`
+
 see also the "yada yada operator" from the helpers section.
 
-## functions
+## helpers
 
 ### uze
 
@@ -114,11 +112,11 @@ warn prints a message in stderr without changing the last command return (`$?`).
 
 die warns and exit.
 
-### readlines
+### getlines
 
 read multiple lines into a list of variables
 
-    date +"%Y\n%m" | readlines year month
+    date +"%Y\n%m" | getlines year month
     echo $year
 
 ### slurp
@@ -133,20 +131,19 @@ read multiple lines in an array
 those are shorter, memorizable aliases for `typeset -A`
 (local associative array) and `typeset -a` (local array).
 
-    Perl                     | zsh                   | uze
-    ------------------------------------------------------------
-    my %foo                  | typeset -A  foo       | my% foo
-    my @bar                  | typeset -a  bar       | my@ bar
-    my %foo # global         | typeset -gA  foo      | our% foo
-    my @bar # global         | typeset -ga  bar      | our@ bar
-    ref $user                | ${(t)user}            |
-    (ref $user) // 'no more' | ${(t)user-no more}    |
-    exists $user{cpan}       | (( $+user[cpan] ))    |
+    Perl                       | zsh                   | uze
+    ---------------------------------------------------------------
+    my %foo                    | typeset -A  foo       | my% foo
+    my @bar                    | typeset -a  bar       | my@ bar
+    my %foo # in global scope  | typeset -gA  foo      | our% foo
+    my @bar # in global scope  | typeset -ga  bar      | our@ bar
+    ref $user                  | ${(t)user}            |
+    (ref $user) // 'no more'   | ${(t)user-no more}    |
+    exists $user{cpan}         | (( $+user[cpan] ))    | defined user\[cpan]
 
-`my@` is only usefull inside a function to prevent the declaration
+
+`my@` is only useful inside a function to prevent the declaration
 of a global array.
-
-### warn, die, warn_ and die_
 
 ### the yada-yada operator (...)
 
