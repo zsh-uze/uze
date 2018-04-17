@@ -15,28 +15,24 @@ alias my%='typeset -A'
 alias our@='typeset -ga'
 alias our%='typeset -gA'
 
-warn_ () { local r=$?; print -u2 "$*"; return $r }
-die_  () { local r=$?; print -u2 "$*"; exit   $r }
-alias warn='warn_ at $0 line $LINENO, warning:'
+alias warn='() { local r=$?; print -u2 "$*"; return $r } "at $0 line $LINENO, warning: "'
+alias die='() { local r=$?; print -u2 "$*"; return $r } "died at $0 line $LINENO, warning: "'
 alias ...='{warn unimplemented; return 255}'
-alias die='die_  died at $0 line $LINENO:'
 
-say () {print -l "$@"}
-shush1    () { "$@" 1> /dev/null }
-shush2    () { "$@" 2> /dev/null }
-shush     () { "$@" &> /dev/null }
-slurp     () { IFS=$'\n' read -d '' -A $1 }
-readlines () { local _; IFS=$'\n' read -d '' "$@" _ }
+l         () print -l "$@"
+shush1    () "$@" 1> /dev/null
+shush2    () "$@" 2> /dev/null
+shush     () "$@" &> /dev/null
+slurp     () IFS=$'\n' read -d '' -A $1
+getlines  () { local _; IFS=$'\n' read -d '' "$@" _ }
 
 alias uze/strict='setopt localoptions nounset warncreateglobal'
 alias uze/no/strict='setopt localoptions unset nowarncreateglobal'
 
 defined     () (( ${(P)+1} ))
-uze/alias   () { eval "$2 () { $1 "' "$@" }' }
-uze/which   () { l $^path/$1.zsh(N) }
+uze/alias   () eval "$2 () { $1 "' "$@" }'
+uze/which   () l $^path/$1.zsh(N)
 uze/ns/dump () { local it; @ (${(Mk)functions:#$~1}) which $it }
-uze/ns/subcommands () eval $1' () { $0/${(j:/:)@[1,'$2']} ; shift '$2' "$@" }'
-
 
 uze () {
 
