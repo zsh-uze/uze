@@ -1,5 +1,13 @@
-setopt \
-    warncreateglobal nounset pipefail \
+# options are documented in man zshoptions
+# make expansions more robust and powerful
+#
+# as example:
+#
+# * complains if a global variable is created
+#   from a function or a sourced file
+# * warn while using unset value. use :- :+ := ...
+
+setopt warncreateglobal nounset pipefail \
     globstarshort extendedglob braceccl \
     pathdirs rcquotes \
     promptsubst promptbang promptpercent
@@ -9,6 +17,8 @@ alias @='for it'
 alias %='for k v'
 alias %-='while {read k v}'
 alias @-='while {read it}'
+alias @--='while {IFS= read -r it}'
+-\? () { local it; @- { "$@" $it && l $it } }
 
 alias my@='typeset -a'
 alias my%='typeset -A'
@@ -16,7 +26,7 @@ alias our@='typeset -ga'
 alias our%='typeset -gA'
 
 alias warn='() { local r=$?; print -u2 "$*"; return $r } "at $0 line $LINENO, warning: "'
-alias die='() { local r=$?; print -u2 "$*"; return $r } "died at $0 line $LINENO, warning: "'
+alias die='() { local r=$?; print -u2 "$*"; return $r } "died at $0 line $LINENO: "'
 alias ...='{warn unimplemented; return 255}'
 
 l         () print -l "$@"
@@ -29,7 +39,10 @@ getlines  () { local _; IFS=$'\n' read -d '' "$@" _ }
 alias uze/strict='setopt localoptions nounset warncreateglobal'
 alias uze/no/strict='setopt localoptions unset nowarncreateglobal'
 
-defined     () (( ${(P)+1} ))
+defined     () {
+    local it
+    @ { (( ${(P)+it} )) || return 1 }
+}
 uze/alias   () eval "$2 () { $1 "' "$@" }'
 uze/which   () l $^path/$1.zsh(N)
 uze/ns/dump () { local it; @ (${(Mk)functions:#$~1}) which $it }
