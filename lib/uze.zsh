@@ -20,6 +20,10 @@ alias @-='while {read it}'
 alias @--='while {IFS= read -r it}'
 -\? () { local it; @- { "$@" $it && l $it } }
 
+# so now you can use (#b) pattern matching without zsh
+# to complain for undefined variables
+alias my:match='local -a mbegin mend match'
+
 alias my@='typeset -a'
 alias my%='typeset -A'
 alias our@='typeset -ga'
