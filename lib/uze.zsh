@@ -29,8 +29,8 @@ alias my%='typeset -A'
 alias our@='typeset -ga'
 alias our%='typeset -gA'
 
-alias warn='() { local r=$?; print -u2 "$*"; return $r } "at $0 line $LINENO, warning: "'
-alias die='() { local r=$?; print -u2 "$*"; return $r } "died at $0 line $LINENO: "'
+alias warn='() { local r=$?; print -u2 "$*"; return $r } "at $0 line $LINENO, warning:"'
+alias die='() { local r=$?; print -u2 "$*"; return $r } "died at $0 line $LINENO:"'
 alias ...='{warn unimplemented; return 255}'
 
 l         () print -l "$@"
@@ -75,7 +75,15 @@ uze () {
     my@ exportable
     @ ($EXPORT) {
         case $it {
-            (:*) exportable+=( ${=EXPORT_TAGS[$it]?unknown tag $it} ) ;;
+            (:*)
+                if [[ -z ${EXPORT_TAGS[$it]:-} ]] {
+                    # TODO: test if uze/
+                    warn "\$EXPORT_TAGS doesn't provide a '$it' tag for $__PACKAGE__. is uze/export/$__PACKAGE__ defined ?"
+                } else {
+                    echo ${(kv)EXPORT_TAGS}
+                    exportable+=( ${=EXPORT_TAGS[$it]} )
+                }
+            ;;
             (*)  exportable+=$it ;;
         }
     }
