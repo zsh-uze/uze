@@ -13,6 +13,7 @@ setopt warncreateglobal nounset pipefail \
     promptsubst promptbang promptpercent
 
 it= k= v=
+them=()
 alias @='for it'
 alias %='for k v'
 alias %-='while {read k v}'
@@ -37,7 +38,15 @@ l         () print -l "$@"
 shush1    () "$@" 1> /dev/null
 shush2    () "$@" 2> /dev/null
 shush     () "$@" &> /dev/null
-slurp     () IFS=$'\n' read -d '' -A $1
+# slurp     () IFS=$'\n' read -r -d '' -A $1
+# sadly became this because of empty lines
+slurp () {
+    local it
+    local n=${1:-them}
+    set --
+    @-- { set -- "$@" "$it" }
+    set -A $n "$@"
+}
 getlines  () { local _; IFS=$'\n' read -d '' "$@" _ }
 
 alias uze/strict='setopt localoptions nounset warncreateglobal'
@@ -56,7 +65,6 @@ uze () {
     my% EXPORT_TAGS # set of tags that can be defined in uze/import/$__PACKAGE__
     my@ EXPORT      # symbols declared to be exported
     local __PACKAGE__=$1 __SUB__ __CALLER__ it=
-
     shift
     .  $__PACKAGE__.zsh
 
@@ -77,10 +85,10 @@ uze () {
         case $it {
             (:*)
                 if [[ -z ${EXPORT_TAGS[$it]:-} ]] {
-                    # TODO: test if uze/
+                    # TODO: add in the message:
+                    # test if uze/export/$__PACKAGE__
                     warn "\$EXPORT_TAGS doesn't provide a '$it' tag for $__PACKAGE__. is uze/export/$__PACKAGE__ defined ?"
                 } else {
-                    echo ${(kv)EXPORT_TAGS}
                     exportable+=( ${=EXPORT_TAGS[$it]} )
                 }
             ;;
