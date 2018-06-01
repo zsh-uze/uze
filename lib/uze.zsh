@@ -42,10 +42,10 @@ shush     () "$@" &> /dev/null
 # sadly became this because of empty lines
 slurp () {
     local it
-    local n=${1:-them}
+    local _Slurp4rr4y_=${1:-them}
     set --
     @-- { set -- "$@" "$it" }
-    set -A $n "$@"
+    set -A $_Slurp4rr4y_ "$@"
 }
 getlines  () { local _; IFS=$'\n' read -d '' "$@" _ }
 
