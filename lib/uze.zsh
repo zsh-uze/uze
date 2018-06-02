@@ -19,7 +19,7 @@ alias %='for k v'
 alias %-='while {read k v}'
 alias @-='while {read it}'
 alias @--='while {IFS= read -r it}'
--\? () { local it; @- { "$@" $it && l $it } }
+\?- () { local it; @- { "$@" $it && l $it } }
 
 # so now you can use (#b) pattern matching without zsh
 # to complain for undefined variables
