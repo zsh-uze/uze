@@ -1,3 +1,9 @@
+# todo list
+
+* debian-control can either
+  * install .zwc file instead of .zsh one
+  * install a .zsh then compile one
+
 # uze for impatients
 
 uze make your zsh more perlish
