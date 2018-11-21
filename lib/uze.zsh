@@ -31,7 +31,7 @@ alias our@='typeset -ga'
 alias our%='typeset -gA'
 
 alias warn='() { local r=$?; print -u2 "$*"; return $r } "at $0 line $LINENO, warning:"'
-alias die='() { local r=$?; print -u2 "$*"; return $r } "died at $0 line $LINENO:"'
+alias die='()  { local r=$?; print -u2 "$*"; exit $r   } "died at $0 line $LINENO:"; exit'
 alias ...='{warn unimplemented; return 255}'
 
 l         () print -l "$@"
