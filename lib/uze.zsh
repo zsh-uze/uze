@@ -38,16 +38,24 @@ l         () print -l "$@"
 shush1    () "$@" 1> /dev/null
 shush2    () "$@" 2> /dev/null
 shush     () "$@" &> /dev/null
+
+# slurp should be as simple as
 # slurp     () IFS=$'\n' read -r -d '' -A $1
-# sadly became this because of empty lines
+# but if you do so, empty lines are ignored
+# so ...
+
 slurp () {
     local it
     local _Slurp4rr4y_=${1:-them}
     set --
     @-- { set -- "$@" "$it" }
-    set -A $_Slurp4rr4y_ "$@"
+    set -A "${(@)_Slurp4rr4y_}" "$@"
 }
-getlines  () { local _; IFS=$'\n' read -d '' "$@" _ }
+
+getlines  () {
+    local G371in3z
+    for G371in3z { IFS= read -r $G371in3z }
+}
 
 alias uze/strict='setopt localoptions nounset warncreateglobal'
 alias uze/no/strict='setopt localoptions unset nowarncreateglobal'
