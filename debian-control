@@ -26,4 +26,4 @@ Depends: zsh
 #  <more pairs, if there's more than one file to include. Notice the starting space>
 Description: an opiniated perl inspired library for zsh
  looks like a good idea to share code.
-Files: lib/uze.zsh/uze.zsh /usr/bin/uze.zsh
+Files: lib/uze.zsh /usr/bin/uze.zsh
